@@ -1,7 +1,13 @@
 <template>
-  <div>
+  <div class="content">
+    <button class="add-to-cart" @click="addToCart()">Add to Cart</button>
     <div class="top-row">
-      <div class="top part">
+      <!--<div class="top part" :style="headBorderStyle">-->
+      <div :class="[saleBorderClass, 'top', 'part']">
+        <div class="robot-name"> <!--v-once only displays once/ add in div to see-->
+            {{selectedRobot.head.title}} <!--Display data w Interpolation-->
+          <span v-if="selectedRobot.head.onSale" class="sale">Sale!</span>
+        </div>
         <img v-bind:src="selectedRobot.head.src" title="head"/>
         <!--Bound to parts.js | selectedHeadIndex is index in methods below-->
         <!-- :src is shorthand for v-bind-->
@@ -34,11 +40,29 @@
         <button v-on:click="selectNextBase()" class="next-selector">&#9658;</button>
       </div>
     </div>
+    <div>
+      <h1>Cart</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Robot</th>
+            <th class="cost">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(robot, index) in cart" :key="index">
+            <td>{{robot.head.title}}</td>
+            <td class="cost">{{robot.cost}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
 import availableParts from '../data/parts';
+import createdHookMixin from './created-hook-mixin';
 
 function getPreviousValidIndex(index, length) {
   const deprecatedIndex = index - 1;
@@ -55,6 +79,7 @@ export default {
   data() {
     return {
       availableParts, // parts from parts.js
+      cart: [], // variable needs to be initialized here for Vue to detect change
       selectedHeadIndex: 0,
       selectedLeftArmIndex: 0,
       selectedTorsoIndex: 0,
@@ -62,7 +87,19 @@ export default {
       selectedBaseIndex: 0,
     };
   },
+  mixins: [createdHookMixin],
   computed: {
+    saleBorderClass() {
+      return this.selectedRobot.head.onSale ? 'sale-border' : '';
+    },
+    headBorderStyle() {
+      return {
+        border:
+          this.selectedRobot.head.onSale
+            ? '3px solid red'
+            : ' 3px solid #aaa ',
+      };
+    },
     selectedRobot() {
       return {
         head: availableParts.heads[this.selectedHeadIndex],
@@ -74,6 +111,16 @@ export default {
     },
   },
   methods: {
+    addToCart() {
+      const robot = this.selectedRobot;
+      const cost = robot.head.cost
+        + robot.leftArm.cost
+        + robot.torso.cost
+        + robot.rightArm.cost
+        + robot.base.cost;
+      this.cart.push(Object.assign({}, robot, { cost }));
+      // avoiding pointers to the same object, good practice above
+    },
     selectNextHead() {
       this.selectedHeadIndex = getNextValidIndex(
         this.selectedHeadIndex,
@@ -138,7 +185,7 @@ export default {
 };
 </script>
 
-<style>
+<style lan="scss" scoped>
   .part {
     position: relative;
     width:165px;
@@ -226,5 +273,35 @@ export default {
   }
   .right .next-selector {
     right: -3px;
+  }
+  .robot-name{
+    position: absolute;
+    top: -25px;
+    text-align: center;
+    width: 100%;
+  }
+  .sale{
+    color: red;
+  }
+  .content {
+    position: relative;
+  }
+  .add-to-cart {
+    position: absolute;
+    right: 30px;
+    width: 220px;
+    padding: 3px;
+    font-size: 16px;
+  }
+  td, th {
+    text-align: left;
+    padding: 5px;
+    padding-right: 20px;
+  }
+  .cost {
+    text-align: right;
+  }
+  .sale-border {
+    border: 3px solid red;
   }
 </style>
