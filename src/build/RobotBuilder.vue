@@ -111,7 +111,7 @@ export default {
         + robot.torso.cost
         + robot.rightArm.cost
         + robot.base.cost;
-      this.$store.commit('addRobotToCart', Object.assign({}, robot, { cost }));
+      this.$store.dispatch('addRobotToCart', Object.assign({}, robot, { cost }));
       // avoiding pointers to the same object, good practice above | Object.assign
       this.addedToCart = true;
     },
