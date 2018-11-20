@@ -57,7 +57,7 @@ export default {
       return this.$store.state.robots.cart; // getting the cart from store
     },
     cartSaleItems() {
-      return this.$store.getters.cartSaleItems;
+      return this.$store.getters['robots/cartSaleItems']; // namespaced getters
     },
   },
 };
