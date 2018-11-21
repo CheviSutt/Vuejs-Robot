@@ -6,7 +6,6 @@
     <br/>
     Root Getter Foo: {{rootGetterFoo}} <br/>
     Robots Getter Foo: {{robotsGetterFoo}} <br/>
-    Users Getter Foo: {{usersGetterFoo}} <br/>
 
     <header>
       <nav>
@@ -50,7 +49,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'app',
@@ -60,15 +59,8 @@ export default {
       usersFoo: state => state.users.foo,
     }), // replaces the boilerplate code previous commit: 1st example
     ...mapState('robots', { robotsFoo: 'foo' }), // replaces the boilerplate code previous commit: 2nd example
-    rootGetterFoo() {
-      return this.$store.getters.foo;
-    },
-    robotsGetterFoo() {
-      return this.$store.getters['robots/foo'];
-    },
-    usersGetterFoo() {
-      return this.$store.getters['users/foo'];
-    },
+    ...mapGetters({ rootGetterFoo: 'foo' }), // replaces the boilerplate code 2 previous commits: 3rd example
+    ...mapGetters('robots', { robotsGetterFoo: 'foo' }),
     cart() {
       return this.$store.state.robots.cart; // robots from store/modules/robots.js
     },
